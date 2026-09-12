@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Detalhes da categoria{% endblock %}
+
+{% block content %}
+    <h2>Detalhes da categoria</h2>
+
+    <p><strong>ID:</strong> {{ categoria.pk }}</p>
+    <p><strong>Empresa:</strong> {{ categoria.empresa }}</p>
+    <p><strong>Nome:</strong> {{ categoria.nome }}</p>
+    <p><strong>Descrição:</strong> {{ categoria.descricao|default:"-" }}</p>
+    <p><strong>Ativo:</strong> {{ categoria.ativo }}</p>
+
+    <p class="acoes">
+        <a href="{% url 'categoria_update' categoria.pk %}">Editar</a>
+        <a href="{% url 'categoria_delete' categoria.pk %}">Excluir</a>
+        <a href="{% url 'categoria_list' %}">Voltar</a>
+    </p>
+
+    <h3>Produtos</h3>
+    <ul>
+        {% for produto in categoria.produtos.all %}
+            <li>
+                <a href="{% url 'produto_detail' produto.pk %}">{{ produto.nome }}</a>
+            </li>
+        {% empty %}
+            <li>Nenhum produto cadastrado.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

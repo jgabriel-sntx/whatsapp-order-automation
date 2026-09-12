@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Empresas{% endblock %}
+
+{% block content %}
+    <h2>Empresas</h2>
+
+    <p>
+        <a href="{% url 'empresa_create' %}">Nova empresa</a>
+    </p>
+
+    <ul>
+        {% for empresa in empresas %}
+            <li>
+                <a href="{% url 'empresa_detail' empresa.pk %}">{{ empresa.nome }}</a>
+            </li>
+        {% empty %}
+            <li>Nenhuma empresa cadastrada.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

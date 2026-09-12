@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}WhatsApp Order Automation{% endblock %}</title>
+</head>
+<body>
+    <nav>
+        <a href="{% url 'index' %}">Início</a> |
+        <a href="{% url 'empresa_list' %}">Empresas</a> |
+        <a href="{% url 'categoria_list' %}">Categorias</a> |
+    </nav>
+    <hr>
+
+    {% block content %}{% endblock %}
+</body>
+</html>

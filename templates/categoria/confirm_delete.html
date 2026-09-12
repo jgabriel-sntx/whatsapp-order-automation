@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Excluir categoria{% endblock %}
+
+{% block content %}
+    <h2>Excluir categoria</h2>
+
+    <p>Tem certeza que deseja excluir a categoria "{{ categoria.nome }}"?</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Confirmar exclusão</button>
+        <a href="{% url 'categoria_detail' categoria.pk %}">Cancelar</a>
+    </form>
+{% endblock %}

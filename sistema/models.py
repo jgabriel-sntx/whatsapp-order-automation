@@ -74,7 +74,7 @@ class Pedido(models.Model):
         on_delete=models.CASCADE,
         related_name="pedidos"
     )
-    STATUS = models.CharField(
+    status = models.CharField(
         max_length=20,
         choices=STATUS_CHOICES,
         default="pendente"

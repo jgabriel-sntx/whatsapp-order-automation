@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Detalhes da empresa{% endblock %}
+
+{% block content %}
+    <h2>Detalhes da empresa</h2>
+
+    <p><strong>ID:</strong> {{ empresa.pk }}</p>
+    <p><strong>Nome:</strong> {{ empresa.nome }}</p>
+    <p><strong>Telefone:</strong> {{ empresa.telefone }}</p>
+    <p><strong>Endereço:</strong> {{ empresa.endereco }}</p>
+    <p><strong>Instruções de atendimento:</strong> {{ empresa.instrucoes_atendimento|default:"-" }}</p>
+
+    <p class="acoes">
+        <a href="{% url 'empresa_update' empresa.pk %}">Editar</a>
+        <a href="{% url 'empresa_delete' empresa.pk %}">Excluir</a>
+        <a href="{% url 'empresa_list' %}">Voltar</a>
+    </p>
+
+    <h3>Categorias</h3>
+    <ul>
+        {% for categoria in empresa.categorias.all %}
+            <li>
+                <a href="{% url 'categoria_detail' categoria.pk %}">{{ categoria.nome }}</a>
+            </li>
+        {% empty %}
+            <li>Nenhuma categoria cadastrada.</li>
+        {% endfor %}
+    </ul>
+
+    <h3>Clientes</h3>
+    <ul>
+        {% for cliente in empresa.clientes.all %}
+            <li>
+                <a href="{% url 'cliente_detail' cliente.pk %}">{{ cliente.nome }}</a>
+            </li>
+        {% empty %}
+            <li>Nenhum cliente cadastrado.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}
