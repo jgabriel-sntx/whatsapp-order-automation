@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Detalhes do item de pedido{% endblock %}
+
+{% block content %}
+    <h2>Detalhes do item de pedido</h2>
+
+    <p><strong>ID:</strong> {{ item.pk }}</p>
+    <p><strong>Pedido:</strong> <a href="{% url 'pedido_detail' item.pedido.pk %}">Pedido #{{ item.pedido.pk }}</a></p>
+    <p><strong>Produto:</strong> {{ item.produto.nome }}</p>
+    <p><strong>Quantidade:</strong> {{ item.quantidade }}</p>
+    <p><strong>Subtotal:</strong> {{ item.calcular_subtotal }}</p>
+
+    <p class="acoes">
+        <a href="{% url 'itempedido_update' item.pk %}">Editar</a>
+        <a href="{% url 'itempedido_delete' item.pk %}">Excluir</a>
+        <a href="{% url 'itempedido_list' %}">Voltar</a>
+    </p>
+{% endblock %}

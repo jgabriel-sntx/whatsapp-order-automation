@@ -1,7 +1,7 @@
 from django import forms
 from django.shortcuts import get_object_or_404, redirect, render
 
-from .models import Categoria, Empresa, Cliente, Produto
+from .models import Categoria, Empresa, Cliente, Produto, Pedido, ItemPedido
 
 
 # Página inicial com o menu de navegação (definido em base.html).
@@ -240,3 +240,117 @@ def produto_delete(request, pk):
         produto.delete()
         return redirect("produto_list")
     return render(request, "produto/confirm_delete.html", {"produto": produto})
+
+# =============================================================================
+# PEDIDO
+# =============================================================================
+
+# Form de Pedido: só cliente e status — "criado_em" é preenchido
+# automaticamente pelo model (auto_now_add) e não entra no form.
+class PedidoForm(forms.ModelForm):
+    class Meta:
+        model = Pedido
+        fields = ["cliente", "status"]
+
+
+# Lista todos os pedidos cadastrados.
+def pedido_list(request):
+    pedidos = Pedido.objects.all()
+    return render(request, "pedido/list.html", {"pedidos": pedidos})
+
+
+# Mostra os detalhes de um pedido específico.
+def pedido_detail(request, pk):
+    pedido = get_object_or_404(Pedido, pk=pk)
+    return render(request, "pedido/detail.html", {"pedido": pedido})
+
+
+# Exibe o formulário (GET) e cria um novo pedido (POST).
+def pedido_create(request):
+    if request.method == "POST":
+        form = PedidoForm(request.POST)
+        if form.is_valid():
+            pedido = form.save()
+            return redirect("pedido_detail", pk=pedido.pk)
+    else:
+        form = PedidoForm()
+    return render(request, "pedido/form.html", {"form": form})
+
+
+# Exibe o formulário pré-preenchido (GET) e salva as alterações (POST).
+def pedido_update(request, pk):
+    pedido = get_object_or_404(Pedido, pk=pk)
+    if request.method == "POST":
+        form = PedidoForm(request.POST, instance=pedido)
+        if form.is_valid():
+            form.save()
+            return redirect("pedido_detail", pk=pedido.pk)
+    else:
+        form = PedidoForm(instance=pedido)
+    return render(request, "pedido/form.html", {"form": form})
+
+
+# Pede confirmação (GET) e exclui o pedido (POST).
+def pedido_delete(request, pk):
+    pedido = get_object_or_404(Pedido, pk=pk)
+    if request.method == "POST":
+        pedido.delete()
+        return redirect("pedido_list")
+    return render(request, "pedido/confirm_delete.html", {"pedido": pedido})
+
+
+# =============================================================================
+# ITEMPEDIDO
+# =============================================================================
+
+# Form de ItemPedido: a qual pedido pertence, qual produto e a quantidade.
+class ItemPedidoForm(forms.ModelForm):
+    class Meta:
+        model = ItemPedido
+        fields = ["pedido", "produto", "quantidade"]
+
+
+# Lista todos os itens de pedido cadastrados.
+def itempedido_list(request):
+    itens = ItemPedido.objects.all()
+    return render(request, "itempedido/list.html", {"itens": itens})
+
+
+# Mostra os detalhes de um item de pedido específico.
+def itempedido_detail(request, pk):
+    item = get_object_or_404(ItemPedido, pk=pk)
+    return render(request, "itempedido/detail.html", {"item": item})
+
+
+# Exibe o formulário (GET) e cria um novo item de pedido (POST).
+def itempedido_create(request):
+    if request.method == "POST":
+        form = ItemPedidoForm(request.POST)
+        if form.is_valid():
+            item = form.save()
+            return redirect("itempedido_detail", pk=item.pk)
+    else:
+        form = ItemPedidoForm()
+    return render(request, "itempedido/form.html", {"form": form})
+
+
+# Exibe o formulário pré-preenchido (GET) e salva as alterações (POST).
+def itempedido_update(request, pk):
+    item = get_object_or_404(ItemPedido, pk=pk)
+    if request.method == "POST":
+        form = ItemPedidoForm(request.POST, instance=item)
+        if form.is_valid():
+            form.save()
+            return redirect("itempedido_detail", pk=item.pk)
+    else:
+        form = ItemPedidoForm(instance=item)
+    return render(request, "itempedido/form.html", {"form": form})
+
+
+# Pede confirmação (GET) e exclui o item de pedido (POST).
+def itempedido_delete(request, pk):
+    item = get_object_or_404(ItemPedido, pk=pk)
+    if request.method == "POST":
+        item.delete()
+        return redirect("itempedido_list")
+    return render(request, "itempedido/confirm_delete.html", {"item": item})

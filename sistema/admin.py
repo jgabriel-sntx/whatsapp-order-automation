@@ -39,3 +39,27 @@ class ProdutoAdmin(admin.ModelAdmin):
     list_display = ["nome", "categoria", "preco", "ativo"]
     list_filter = ["categoria", "ativo"]
     search_fields = ["nome"]
+
+# =============================================================================
+# PEDIDO
+# =============================================================================
+class ItemPedidoInline(admin.TabularInline):
+    model = ItemPedido
+    extra = 1
+
+
+@admin.register(Pedido)
+class PedidoAdmin(admin.ModelAdmin):
+    list_display = ["id", "cliente", "status", "criado_em"]
+    list_filter = ["status"]
+    search_fields = ["cliente__nome"]
+    inlines = [ItemPedidoInline]
+
+
+# =============================================================================
+# ITEMPEDIDO
+# =============================================================================
+@admin.register(ItemPedido)
+class ItemPedidoAdmin(admin.ModelAdmin):
+    list_display = ["pedido", "produto", "quantidade"]
+    list_filter = ["produto"]

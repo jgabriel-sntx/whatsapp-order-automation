@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Detalhes do pedido{% endblock %}
+
+{% block content %}
+    <h2>Detalhes do pedido</h2>
+
+    <p><strong>ID:</strong> {{ pedido.pk }}</p>
+    <p><strong>Cliente:</strong> {{ pedido.cliente.nome }}</p>
+    <p><strong>Status:</strong> {{ pedido.status }}</p>
+    <p><strong>Criado em:</strong> {{ pedido.criado_em }}</p>
+    <p><strong>Total:</strong> {{ pedido.calcular_total }}</p>
+
+    <p class="acoes">
+        <a href="{% url 'pedido_update' pedido.pk %}">Editar</a>
+        <a href="{% url 'pedido_delete' pedido.pk %}">Excluir</a>
+        <a href="{% url 'pedido_list' %}">Voltar</a>
+    </p>
+
+    <h3>Itens</h3>
+    <ul>
+        {% for item in pedido.itens.all %}
+            <li>
+                <a href="{% url 'itempedido_detail' item.pk %}">{{ item.produto.nome }} - {{ item.quantidade }}x</a>
+            </li>
+        {% empty %}
+            <li>Nenhum item cadastrado.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

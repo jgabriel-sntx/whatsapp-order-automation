@@ -32,4 +32,19 @@ urlpatterns = [
     path("produtos/<int:pk>/", views.produto_detail, name="produto_detail"),
     path("produtos/<int:pk>/editar/", views.produto_update, name="produto_update"),
     path("produtos/<int:pk>/excluir/", views.produto_delete, name="produto_delete"),
+
+    # Pedido: CRUD completo.
+    path("pedidos/", views.pedido_list, name="pedido_list"),
+    path("pedidos/novo/", views.pedido_create, name="pedido_create"),
+    path("pedidos/<int:pk>/", views.pedido_detail, name="pedido_detail"),
+    path("pedidos/<int:pk>/editar/", views.pedido_update, name="pedido_update"),
+    path("pedidos/<int:pk>/excluir/", views.pedido_delete, name="pedido_delete"),
+
+    # ItemPedido: CRUD completo.
+    path("itens-pedido/", views.itempedido_list, name="itempedido_list"),
+    path("itens-pedido/novo/", views.itempedido_create, name="itempedido_create"),
+    path("itens-pedido/<int:pk>/", views.itempedido_detail, name="itempedido_detail"),
+    path("itens-pedido/<int:pk>/editar/", views.itempedido_update, name="itempedido_update"),
+    path("itens-pedido/<int:pk>/excluir/", views.itempedido_delete, name="itempedido_delete"),
+
 ]

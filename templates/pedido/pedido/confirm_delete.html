@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Excluir pedido{% endblock %}
+
+{% block content %}
+    <h2>Excluir pedido</h2>
+
+    <p>Tem certeza que deseja excluir o pedido #{{ pedido.pk }}?</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Confirmar exclusão</button>
+        <a href="{% url 'pedido_detail' pedido.pk %}">Cancelar</a>
+    </form>
+{% endblock %}

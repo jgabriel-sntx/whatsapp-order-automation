@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Pedidos{% endblock %}
+
+{% block content %}
+    <h2>Pedidos</h2>
+
+    <p>
+        <a href="{% url 'pedido_create' %}">Novo pedido</a>
+    </p>
+
+    <ul>
+        {% for pedido in pedidos %}
+            <li>
+                <a href="{% url 'pedido_detail' pedido.pk %}">Pedido #{{ pedido.pk }} - {{ pedido.cliente.nome }}</a>
+            </li>
+        {% empty %}
+            <li>Nenhum pedido cadastrado.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}
