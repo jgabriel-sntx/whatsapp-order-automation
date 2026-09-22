@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Detalhes do cliente{% endblock %}
+
+{% block content %}
+    <h2>Detalhes do cliente</h2>
+
+    <p><strong>ID:</strong> {{ cliente.pk }}</p>
+    <p><strong>Empresa:</strong> {{ cliente.empresa }}</p>
+    <p><strong>Nome:</strong> {{ cliente.nome }}</p>
+    <p><strong>Telefone:</strong> {{ cliente.telefone }}</p>
+    <p><strong>Endereço:</strong> {{ cliente.endereco }}</p>
+    <p><strong>Observações:</strong> {{ cliente.observacoes|default:"-" }}</p>
+
+    <p class="acoes">
+        <a href="{% url 'cliente_update' cliente.pk %}">Editar</a>
+        <a href="{% url 'cliente_delete' cliente.pk %}">Excluir</a>
+        <a href="{% url 'cliente_list' %}">Voltar</a>
+    </p>
+
+    <h3>Pedidos</h3>
+    <ul>
+        {% for pedido in cliente.pedidos.all %}
+            <li>
+                <a href="{% url 'pedido_detail' pedido.pk %}">Pedido #{{ pedido.pk }}</a>
+            </li>
+        {% empty %}
+            <li>Nenhum pedido cadastrado.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

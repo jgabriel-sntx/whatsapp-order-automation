@@ -1,7 +1,7 @@
 from django import forms
 from django.shortcuts import get_object_or_404, redirect, render
 
-from .models import Categoria, Empresa
+from .models import Categoria, Empresa, Cliente, Produto
 
 
 # Página inicial com o menu de navegação (definido em base.html).
@@ -124,3 +124,119 @@ def categoria_delete(request, pk):
         categoria.delete()
         return redirect("categoria_list")
     return render(request, "categoria/confirm_delete.html", {"categoria": categoria})
+
+
+# =============================================================================
+# CLIENTE
+# =============================================================================
+
+# Form de Cliente: empresa dona do cadastro, nome, telefone, endereço e observações.
+class ClienteForm(forms.ModelForm):
+    class Meta:
+        model = Cliente
+        fields = ["empresa", "nome", "telefone", "endereco", "observacoes"]
+
+
+# Lista todos os clientes cadastrados.
+def cliente_list(request):
+    clientes = Cliente.objects.all()
+    return render(request, "cliente/list.html", {"clientes": clientes})
+
+
+# Mostra os detalhes de um cliente específico.
+def cliente_detail(request, pk):
+    cliente = get_object_or_404(Cliente, pk=pk)
+    return render(request, "cliente/detail.html", {"cliente": cliente})
+
+
+# Exibe o formulário (GET) e cria um novo cliente (POST).
+def cliente_create(request):
+    if request.method == "POST":
+        form = ClienteForm(request.POST)
+        if form.is_valid():
+            cliente = form.save()
+            return redirect("cliente_detail", pk=cliente.pk)
+    else:
+        form = ClienteForm()
+    return render(request, "cliente/form.html", {"form": form})
+
+
+# Exibe o formulário pré-preenchido (GET) e salva as alterações (POST).
+def cliente_update(request, pk):
+    cliente = get_object_or_404(Cliente, pk=pk)
+    if request.method == "POST":
+        form = ClienteForm(request.POST, instance=cliente)
+        if form.is_valid():
+            form.save()
+            return redirect("cliente_detail", pk=cliente.pk)
+    else:
+        form = ClienteForm(instance=cliente)
+    return render(request, "cliente/form.html", {"form": form})
+
+
+# Pede confirmação (GET) e exclui o cliente (POST).
+def cliente_delete(request, pk):
+    cliente = get_object_or_404(Cliente, pk=pk)
+    if request.method == "POST":
+        cliente.delete()
+        return redirect("cliente_list")
+    return render(request, "cliente/confirm_delete.html", {"cliente": cliente})
+
+
+# =============================================================================
+# PRODUTO
+# =============================================================================
+
+# Form de Produto: categoria, nome, descrição, preço, imagem e se está ativo.
+class ProdutoForm(forms.ModelForm):
+    class Meta:
+        model = Produto
+        fields = ["categoria", "nome", "descricao", "preco", "imagem", "ativo"]
+
+
+# Lista todos os produtos cadastrados.
+def produto_list(request):
+    produtos = Produto.objects.all()
+    return render(request, "produto/list.html", {"produtos": produtos})
+
+
+# Mostra os detalhes de um produto específico.
+def produto_detail(request, pk):
+    produto = get_object_or_404(Produto, pk=pk)
+    return render(request, "produto/detail.html", {"produto": produto})
+
+
+# Exibe o formulário (GET) e cria um novo produto (POST).
+# Usa request.FILES porque o form tem upload de imagem.
+def produto_create(request):
+    if request.method == "POST":
+        form = ProdutoForm(request.POST, request.FILES)
+        if form.is_valid():
+            produto = form.save()
+            return redirect("produto_detail", pk=produto.pk)
+    else:
+        form = ProdutoForm()
+    return render(request, "produto/form.html", {"form": form})
+
+
+# Exibe o formulário pré-preenchido (GET) e salva as alterações (POST),
+# incluindo troca de imagem.
+def produto_update(request, pk):
+    produto = get_object_or_404(Produto, pk=pk)
+    if request.method == "POST":
+        form = ProdutoForm(request.POST, request.FILES, instance=produto)
+        if form.is_valid():
+            form.save()
+            return redirect("produto_detail", pk=produto.pk)
+    else:
+        form = ProdutoForm(instance=produto)
+    return render(request, "produto/form.html", {"form": form})
+
+
+# Pede confirmação (GET) e exclui o produto (POST).
+def produto_delete(request, pk):
+    produto = get_object_or_404(Produto, pk=pk)
+    if request.method == "POST":
+        produto.delete()
+        return redirect("produto_list")
+    return render(request, "produto/confirm_delete.html", {"produto": produto})

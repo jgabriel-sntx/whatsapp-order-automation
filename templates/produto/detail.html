@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Detalhes do produto{% endblock %}
+
+{% block content %}
+    <h2>Detalhes do produto</h2>
+
+    <p><strong>ID:</strong> {{ produto.pk }}</p>
+    <p><strong>Categoria:</strong> {{ produto.categoria }}</p>
+    <p><strong>Nome:</strong> {{ produto.nome }}</p>
+    <p><strong>Descrição:</strong> {{ produto.descricao|default:"-" }}</p>
+    <p><strong>Preço:</strong> {{ produto.preco }}</p>
+    <p><strong>Ativo:</strong> {{ produto.ativo }}</p>
+
+    {% if produto.imagem %}
+        <p><img src="{{ produto.imagem.url }}" alt="{{ produto.nome }}"></p>
+    {% endif %}
+
+    <p class="acoes">
+        <a href="{% url 'produto_update' produto.pk %}">Editar</a>
+        <a href="{% url 'produto_delete' produto.pk %}">Excluir</a>
+        <a href="{% url 'produto_list' %}">Voltar</a>
+    </p>
+{% endblock %}
