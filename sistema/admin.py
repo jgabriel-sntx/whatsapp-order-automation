@@ -11,14 +11,14 @@ class EmpresaAdmin(admin.ModelAdmin):
 
 admin.register(Categoria)
 class CategoriaAdmin(admin.ModelAdmin):
-    list_display = ["nome", "empresa", "ativo"]
+    list_display = ["nome", "ativo"]
     list_filter = ["empresa", "ativo"]
     search_fields = ["nome"]
 
 
 @admin.register(Cliente)
 class ClienteAdmin(admin.ModelAdmin):
-    list_display = ["nome", "telefone", "empresa"]
+    list_display = ["nome", "telefone"]
     list_filter = ["empresa"]
     search_fields = ["nome", "telefone"]
 
