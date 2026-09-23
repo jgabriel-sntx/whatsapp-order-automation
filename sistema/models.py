@@ -3,12 +3,7 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 
-class Empresa(models.Model):
-    user = models.OneToOneField(
-        User,
-        on_delete=models.CASCADE,
-        related_name="empresa"
-    )
+class Empresa(User):
     nome = models.CharField(max_length=150)
     telefone = models.CharField(max_length=15)
     endereco = models.CharField(max_length=255)
@@ -18,7 +13,7 @@ class Empresa(models.Model):
         return self.nome
 
 class Categoria(models.Model):
-    empresa = models.ForeignKey(
+    empresa = models.OneToOneField(
         Empresa,
         on_delete=models.CASCADE,
         related_name="categorias"

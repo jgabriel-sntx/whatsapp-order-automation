@@ -18,7 +18,7 @@ def index(request):
 class EmpresaForm(forms.ModelForm):
     class Meta:
         model = Empresa
-        fields = ["user", "nome", "telefone", "endereco", "instrucoes_atendimento"]
+        fields = ["nome", "telefone", "endereco", "instrucoes_atendimento"]
 
 
 # Lista todas as empresas cadastradas.
