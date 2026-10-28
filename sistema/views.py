@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from .forms import (
     CategoriaForm,
     ClienteForm,
+    EmpresaCreateForm,
     EmpresaForm,
     ItemPedidoForm,
     PedidoForm,
@@ -32,16 +33,16 @@ def empresa_detail(request, pk):
     return render(request, "empresa/detail.html", {"empresa": empresa})
 
 
-# Exibe o formulário (GET) e cria uma nova empresa (POST); redireciona
-# para a tela de detalhe da empresa recém-criada.
+# Cadastro público de empresa: exibe o formulário (GET) e cria User + Empresa
+# (POST); depois manda para a tela de login.
 def empresa_create(request):
     if request.method == "POST":
-        form = EmpresaForm(request.POST)
+        form = EmpresaCreateForm(request.POST)
         if form.is_valid():
-            empresa = form.save()
-            return redirect("empresa_detail", pk=empresa.pk)
+            form.save()
+            return redirect("login")
     else:
-        form = EmpresaForm()
+        form = EmpresaCreateForm()
     return render(request, "empresa/form.html", {"form": form})
 
 

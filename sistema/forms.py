@@ -1,10 +1,20 @@
 from django import forms
+from django.contrib.auth.forms import UserCreationForm
 
 from .models import Categoria, Empresa, Cliente, Produto, Pedido, ItemPedido
 
 
+# Cadastro de Empresa (rota pública). Como Empresa herda de User, o
+# UserCreationForm já traz username + senha (com confirmação e validadores);
+# aqui só trocamos o model e acrescentamos os campos próprios da Empresa.
+class EmpresaCreateForm(UserCreationForm):
+    class Meta(UserCreationForm.Meta):
+        model = Empresa
+        fields = ["username", "nome", "telefone", "endereco", "instrucoes_atendimento"]
+
+
 # Form de Empresa: gera automaticamente os campos do model (menos o id),
-# usado tanto na criação quanto na edição.
+# usado na edição (sem senha).
 class EmpresaForm(forms.ModelForm):
     class Meta:
         model = Empresa
