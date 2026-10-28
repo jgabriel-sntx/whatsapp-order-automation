@@ -68,7 +68,9 @@ class ItemPedidoForm(forms.ModelForm):
 
     def __init__(self, *args, empresa, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["pedido"].queryset = Pedido.objects.filter(cliente__empresa=empresa)
+        self.fields["pedido"].queryset = Pedido.objects.filter(
+            cliente__empresa=empresa
+        ).select_related("cliente")
         self.fields["produto"].queryset = Produto.objects.filter(categoria__empresa=empresa)
 
     def clean_pedido(self):

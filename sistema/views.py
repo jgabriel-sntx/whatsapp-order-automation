@@ -53,15 +53,17 @@ def clientes_da_empresa(empresa):
 
 
 def produtos_da_empresa(empresa):
-    return Produto.objects.filter(categoria__empresa=empresa)
+    return Produto.objects.filter(categoria__empresa=empresa).select_related("categoria")
 
 
 def pedidos_da_empresa(empresa):
-    return Pedido.objects.filter(cliente__empresa=empresa)
+    return Pedido.objects.filter(cliente__empresa=empresa).select_related("cliente")
 
 
 def itens_da_empresa(empresa):
-    return ItemPedido.objects.filter(pedido__cliente__empresa=empresa)
+    return ItemPedido.objects.filter(pedido__cliente__empresa=empresa).select_related(
+        "pedido", "produto"
+    )
 
 
 # Página inicial com o menu de navegação (definido em base.html).
@@ -341,7 +343,8 @@ def pedido_list(request):
 
 @empresa_required
 def pedido_detail(request, pk):
-    pedido = get_object_or_404(pedidos_da_empresa(request.empresa), pk=pk)
+    pedidos = pedidos_da_empresa(request.empresa).prefetch_related("itens__produto")
+    pedido = get_object_or_404(pedidos, pk=pk)
     return render(request, "pedido/detail.html", {"pedido": pedido})
 
 
