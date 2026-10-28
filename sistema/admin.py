@@ -1,19 +1,37 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
 
-from .models import Categoria, Cliente, Empresa, ItemPedido, Pedido, Produto
-
+from .models import Cadastro, Categoria, Cliente, Empresa, ItemPedido, Pedido, Produto
 
 @admin.register(Empresa)
-class EmpresaAdmin(admin.ModelAdmin):
-    list_display = ["nome", "telefone",]
-    search_fields = ["nome", "telefone"]
+class EmpresaAdmin(UserAdmin):
+    list_display = ["username", "nome", "telefone"]
+    search_fields = ["username", "nome", "telefone"]
+    fieldsets = UserAdmin.fieldsets + (
+        ("Dados da empresa", {"fields": ["nome", "telefone", "endereco", "instrucoes_atendimento"]}),
+    )
+    add_fieldsets = UserAdmin.add_fieldsets + (
+        ("Dados da empresa", {"fields": ["nome", "telefone", "endereco", "instrucoes_atendimento"]}),
+    )
 
 
-admin.register(Categoria)
+
+@admin.register(Categoria)
 class CategoriaAdmin(admin.ModelAdmin):
-    list_display = ["nome", "ativo"]
+    list_display = ["nome", "empresa", "ativo"]
     list_filter = ["empresa", "ativo"]
     search_fields = ["nome"]
+
+
+class CadastroInline(admin.TabularInline):
+    model = Cadastro
+    extra = 1
+
+
+@admin.register(Cadastro)
+class CadastroAdmin(admin.ModelAdmin):
+    list_display = ["empresa", "cliente", "dataCadastro"]
+    list_filter = ["empresa"]
 
 
 @admin.register(Cliente)
@@ -21,6 +39,8 @@ class ClienteAdmin(admin.ModelAdmin):
     list_display = ["nome", "telefone"]
     list_filter = ["empresa"]
     search_fields = ["nome", "telefone"]
+    inlines = [CadastroInline]
+
 
 
 @admin.register(Produto)

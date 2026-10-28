@@ -1,5 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
+from decimal import Decimal
+
+from django.core.validators import MinValueValidator
+
 
 
 class Empresa(User):
@@ -8,8 +12,12 @@ class Empresa(User):
     endereco = models.CharField(max_length=255)
     instrucoes_atendimento = models.TextField(blank=True)
 
-    def __str__(self):
-        return self.nome
+    class Meta:
+        verbose_name = "Empresa"
+        verbose_name_plural = "Empresas"
+
+        def __str__(self):
+            return self.nome
 
 
 class Cliente(models.Model):
@@ -41,6 +49,14 @@ class Cadastro(models.Model):
 
     dataCadastro = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["empresa", "cliente"],
+                name="cadastro_empresa_cliente_unico"
+            )
+        ]
+
     def __str__(self):
         return f"{self.empresa.nome} - {self.cliente.nome}"
 
@@ -63,13 +79,17 @@ class Categoria(models.Model):
 class Produto(models.Model):
     categoria = models.ForeignKey(
         Categoria,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name="produtos"
     )
 
     nome = models.CharField(max_length=150)
     descricao = models.TextField(blank=True)
-    preco = models.DecimalField(max_digits=10, decimal_places=2)
+    preco = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        validators=[MinValueValidator(Decimal("0"))]
+    )
     imagem = models.ImageField(
         upload_to="produtos/",
         blank=True,
@@ -91,7 +111,7 @@ class Pedido(models.Model):
 
     cliente = models.ForeignKey(
         Cliente,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name="pedidos"
     )
 
@@ -134,11 +154,14 @@ class ItemPedido(models.Model):
 
     produto = models.ForeignKey(
         Produto,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name="itens"
     )
 
-    quantidade = models.PositiveIntegerField(default=1)
+    quantidade = models.PositiveIntegerField(
+        default=1,
+        validators=[MinValueValidator(1)]
+    )
 
     def calcular_subtotal(self):
         return self.produto.preco * self.quantidade
