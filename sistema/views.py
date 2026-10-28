@@ -1,6 +1,13 @@
-from django import forms
 from django.shortcuts import get_object_or_404, redirect, render
 
+from .forms import (
+    CategoriaForm,
+    ClienteForm,
+    EmpresaForm,
+    ItemPedidoForm,
+    PedidoForm,
+    ProdutoForm,
+)
 from .models import Categoria, Empresa, Cliente, Produto, Pedido, ItemPedido
 
 
@@ -12,14 +19,6 @@ def index(request):
 # =============================================================================
 # EMPRESA
 # =============================================================================
-
-# Form de Empresa: gera automaticamente os campos do model (menos o id),
-# usado tanto na criação quanto na edição.
-class EmpresaForm(forms.ModelForm):
-    class Meta:
-        model = Empresa
-        fields = ["nome", "telefone", "endereco", "instrucoes_atendimento"]
-
 
 # Lista todas as empresas cadastradas.
 def empresa_list(request):
@@ -73,13 +72,6 @@ def empresa_delete(request, pk):
 # CATEGORIA
 # =============================================================================
 
-# Form de Categoria: empresa dona da categoria, nome, descrição e se está ativa.
-class CategoriaForm(forms.ModelForm):
-    class Meta:
-        model = Categoria
-        fields = ["empresa", "nome", "descricao", "ativo"]
-
-
 # Lista todas as categorias cadastradas.
 def categoria_list(request):
     categorias = Categoria.objects.all()
@@ -130,13 +122,6 @@ def categoria_delete(request, pk):
 # CLIENTE
 # =============================================================================
 
-# Form de Cliente: empresa dona do cadastro, nome, telefone, endereço e observações.
-class ClienteForm(forms.ModelForm):
-    class Meta:
-        model = Cliente
-        fields = ["empresa", "nome", "telefone", "endereco", "observacoes"]
-
-
 # Lista todos os clientes cadastrados.
 def cliente_list(request):
     clientes = Cliente.objects.all()
@@ -186,13 +171,6 @@ def cliente_delete(request, pk):
 # =============================================================================
 # PRODUTO
 # =============================================================================
-
-# Form de Produto: categoria, nome, descrição, preço, imagem e se está ativo.
-class ProdutoForm(forms.ModelForm):
-    class Meta:
-        model = Produto
-        fields = ["categoria", "nome", "descricao", "preco", "imagem", "ativo"]
-
 
 # Lista todos os produtos cadastrados.
 def produto_list(request):
@@ -245,14 +223,6 @@ def produto_delete(request, pk):
 # PEDIDO
 # =============================================================================
 
-# Form de Pedido: só cliente e status — "criado_em" é preenchido
-# automaticamente pelo model (auto_now_add) e não entra no form.
-class PedidoForm(forms.ModelForm):
-    class Meta:
-        model = Pedido
-        fields = ["cliente", "status"]
-
-
 # Lista todos os pedidos cadastrados.
 def pedido_list(request):
     pedidos = Pedido.objects.all()
@@ -302,13 +272,6 @@ def pedido_delete(request, pk):
 # =============================================================================
 # ITEMPEDIDO
 # =============================================================================
-
-# Form de ItemPedido: a qual pedido pertence, qual produto e a quantidade.
-class ItemPedidoForm(forms.ModelForm):
-    class Meta:
-        model = ItemPedido
-        fields = ["pedido", "produto", "quantidade"]
-
 
 # Lista todos os itens de pedido cadastrados.
 def itempedido_list(request):
