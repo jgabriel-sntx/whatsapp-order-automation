@@ -1,21 +1,159 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>{% block title %}WhatsApp Order Automation{% endblock %}</title>
+    <link rel="icon" href="{% static 'kaiadmin/img/favicon.ico' %}" type="image/x-icon">
+
+    <!-- Fontes e ícones do Kaiadmin -->
+    <script src="{% static 'kaiadmin/js/plugin/webfont/webfont.min.js' %}"></script>
+    <script>
+        WebFont.load({
+            google: { families: ["Public Sans:300,400,500,600,700"] },
+            custom: {
+                families: ["Font Awesome 5 Solid", "Font Awesome 5 Regular", "Font Awesome 5 Brands", "simple-line-icons"],
+                urls: ["{% static 'kaiadmin/css/fonts.min.css' %}"],
+            },
+            active: function () {
+                sessionStorage.fonts = true;
+            },
+        });
+    </script>
+
+    <link rel="stylesheet" href="{% static 'kaiadmin/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'kaiadmin/css/plugins.min.css' %}">
+    <link rel="stylesheet" href="{% static 'kaiadmin/css/kaiadmin.min.css' %}">
 </head>
 <body>
-    <nav>
-        <a href="{% url 'index' %}">Início</a> |
-        <a href="{% url 'empresa_list' %}">Empresas</a> |
-        <a href="{% url 'categoria_list' %}">Categorias</a> |
-        <a href="{% url 'produto_list' %}">Produtos</a> |
-        <a href="{% url 'cliente_list' %}">Clientes</a> |
-        <a href="{% url 'pedido_list' %}">Pedidos</a> |
-        <a href="{% url 'itempedido_list' %}">Itens de Pedido</a>
-    </nav>
-    <hr>
+    {% with rota=request.resolver_match.url_name|default:"" %}
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <div class="sidebar" data-background-color="dark">
+            <div class="sidebar-logo">
+                <div class="logo-header" data-background-color="dark">
+                    <a href="{% url 'index' %}" class="logo text-white fw-bold">
+                        <i class="fab fa-whatsapp me-2"></i> WhatsApp Orders
+                    </a>
+                    <div class="nav-toggle">
+                        <button class="btn btn-toggle toggle-sidebar">
+                            <i class="gg-menu-right"></i>
+                        </button>
+                        <button class="btn btn-toggle sidenav-toggler">
+                            <i class="gg-menu-left"></i>
+                        </button>
+                    </div>
+                    <button class="topbar-toggler more">
+                        <i class="gg-more-vertical-alt"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="sidebar-wrapper scrollbar scrollbar-inner">
+                <div class="sidebar-content">
+                    <ul class="nav nav-secondary">
+                        <li class="nav-item {% if rota == 'index' %}active{% endif %}">
+                            <a href="{% url 'index' %}">
+                                <i class="fas fa-home"></i>
+                                <p>Início</p>
+                            </a>
+                        </li>
+                        <li class="nav-section">
+                            <span class="sidebar-mini-icon">
+                                <i class="fa fa-ellipsis-h"></i>
+                            </span>
+                            <h4 class="text-section">Cadastros</h4>
+                        </li>
+                        <li class="nav-item {% if 'empresa_' in rota %}active{% endif %}">
+                            <a href="{% url 'empresa_list' %}">
+                                <i class="fas fa-building"></i>
+                                <p>Empresas</p>
+                            </a>
+                        </li>
+                        <li class="nav-item {% if 'categoria_' in rota %}active{% endif %}">
+                            <a href="{% url 'categoria_list' %}">
+                                <i class="fas fa-tags"></i>
+                                <p>Categorias</p>
+                            </a>
+                        </li>
+                        <li class="nav-item {% if 'produto_' in rota %}active{% endif %}">
+                            <a href="{% url 'produto_list' %}">
+                                <i class="fas fa-box"></i>
+                                <p>Produtos</p>
+                            </a>
+                        </li>
+                        <li class="nav-item {% if 'cliente_' in rota %}active{% endif %}">
+                            <a href="{% url 'cliente_list' %}">
+                                <i class="fas fa-users"></i>
+                                <p>Clientes</p>
+                            </a>
+                        </li>
+                        <li class="nav-item {% if 'pedido_' in rota and 'itempedido_' not in rota %}active{% endif %}">
+                            <a href="{% url 'pedido_list' %}">
+                                <i class="fas fa-shopping-cart"></i>
+                                <p>Pedidos</p>
+                            </a>
+                        </li>
+                        <li class="nav-item {% if 'itempedido_' in rota %}active{% endif %}">
+                            <a href="{% url 'itempedido_list' %}">
+                                <i class="fas fa-list"></i>
+                                <p>Itens de Pedido</p>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- Fim da Sidebar -->
 
-    {% block content %}{% endblock %}
+        <div class="main-panel">
+            <div class="main-header">
+                <div class="main-header-logo">
+                    <div class="logo-header" data-background-color="dark">
+                        <a href="{% url 'index' %}" class="logo text-white fw-bold">
+                            <i class="fab fa-whatsapp me-2"></i> WhatsApp Orders
+                        </a>
+                        <div class="nav-toggle">
+                            <button class="btn btn-toggle toggle-sidebar">
+                                <i class="gg-menu-right"></i>
+                            </button>
+                            <button class="btn btn-toggle sidenav-toggler">
+                                <i class="gg-menu-left"></i>
+                            </button>
+                        </div>
+                        <button class="topbar-toggler more">
+                            <i class="gg-more-vertical-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                <nav class="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom">
+                    <div class="container-fluid">
+                    </div>
+                </nav>
+            </div>
+
+            <div class="container">
+                <div class="page-inner">
+                    {% block content %}{% endblock %}
+                </div>
+            </div>
+
+            <footer class="footer">
+                <div class="container-fluid d-flex justify-content-between">
+                    <div>WhatsApp Order Automation — PSW II</div>
+                    <div>
+                        Template <a href="https://www.themekita.com" target="_blank">Kaiadmin</a> por ThemeKita
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+    {% endwith %}
+
+    <script src="{% static 'kaiadmin/js/core/jquery-3.7.1.min.js' %}"></script>
+    <script src="{% static 'kaiadmin/js/core/popper.min.js' %}"></script>
+    <script src="{% static 'kaiadmin/js/core/bootstrap.min.js' %}"></script>
+    <script src="{% static 'kaiadmin/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js' %}"></script>
+    <script src="{% static 'kaiadmin/js/kaiadmin.min.js' %}"></script>
 </body>
 </html>
