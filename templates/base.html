@@ -51,6 +51,7 @@
             </div>
             <div class="sidebar-wrapper scrollbar scrollbar-inner">
                 <div class="sidebar-content">
+                    {% if user.is_authenticated %}
                     <ul class="nav nav-secondary">
                         <li class="nav-item {% if rota == 'index' %}active{% endif %}">
                             <a href="{% url 'index' %}">
@@ -101,6 +102,7 @@
                             </a>
                         </li>
                     </ul>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -128,6 +130,52 @@
                 </div>
                 <nav class="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom">
                     <div class="container-fluid">
+                        <ul class="navbar-nav topbar-nav ms-md-auto align-items-center">
+                            {% if user.is_authenticated %}
+                                {% with nome_empresa=user.empresa.nome|default:user.username %}
+                                <li class="nav-item topbar-user dropdown hidden-caret">
+                                    <a class="dropdown-toggle profile-pic" data-bs-toggle="dropdown" href="#" aria-expanded="false">
+                                        <div class="avatar-sm">
+                                            <span class="avatar-title rounded-circle bg-success">{{ nome_empresa|first|upper }}</span>
+                                        </div>
+                                        <span class="profile-username">
+                                            <span class="op-7">Olá,</span>
+                                            <span class="fw-bold">{{ nome_empresa }}</span>
+                                        </span>
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-user animated fadeIn">
+                                        <li>
+                                            <div class="user-box">
+                                                <div class="u-text">
+                                                    <h4>{{ nome_empresa }}</h4>
+                                                    <p class="text-muted">{{ user.username }}</p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="dropdown-divider"></div>
+                                            {% url 'logout' as logout_url %}
+                                            {% if logout_url %}
+                                                <form method="post" action="{{ logout_url }}">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="dropdown-item">
+                                                        <i class="fas fa-sign-out-alt me-2"></i> Sair
+                                                    </button>
+                                                </form>
+                                            {% endif %}
+                                        </li>
+                                    </ul>
+                                </li>
+                                {% endwith %}
+                            {% else %}
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{% url 'login' %}">Entrar</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="btn btn-success btn-sm ms-2" href="{% url 'empresa_create' %}">Cadastrar empresa</a>
+                                </li>
+                            {% endif %}
+                        </ul>
                     </div>
                 </nav>
             </div>
