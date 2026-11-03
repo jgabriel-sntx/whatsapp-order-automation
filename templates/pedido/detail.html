@@ -7,7 +7,7 @@
 
     <p><strong>ID:</strong> {{ pedido.pk }}</p>
     <p><strong>Cliente:</strong> {{ pedido.cliente.nome }}</p>
-    <p><strong>Status:</strong> {{ pedido.status }}</p>
+    <p><strong>Status:</strong> {{ pedido.get_status_display }}</p>
     <p><strong>Criado em:</strong> {{ pedido.criado_em }}</p>
     <p><strong>Total:</strong> {{ pedido.calcular_total }}</p>
 

@@ -6,7 +6,9 @@
     <h2>Detalhes do cliente</h2>
 
     <p><strong>ID:</strong> {{ cliente.pk }}</p>
-    <p><strong>Empresa:</strong> {{ cliente.empresa }}</p>
+    <p><strong>Empresa:</strong>
+        {% for e in cliente.empresa.all %}{{ e.nome }}{% if not forloop.last %}, {% endif %}{% empty %}-{% endfor %}
+    </p>
     <p><strong>Nome:</strong> {{ cliente.nome }}</p>
     <p><strong>Telefone:</strong> {{ cliente.telefone }}</p>
     <p><strong>Endereço:</strong> {{ cliente.endereco }}</p>
