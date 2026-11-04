@@ -3,19 +3,18 @@
 {% block title %}Clientes{% endblock %}
 
 {% block content %}
-    <h2>Clientes</h2>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="fw-bold mb-0">Clientes</h3>
+        <a class="btn btn-success" href="{% url 'cliente_create' %}"><i class="fas fa-plus me-1"></i> Novo cliente</a>
+    </div>
 
-    <p>
-        <a href="{% url 'cliente_create' %}">Novo cliente</a>
-    </p>
-
-    <ul>
-        {% for cliente in clientes %}
-            <li>
-                <a href="{% url 'cliente_detail' cliente.pk %}">{{ cliente.nome }}</a>
-            </li>
-        {% empty %}
-            <li>Nenhum cliente cadastrado.</li>
-        {% endfor %}
-    </ul>
+    <div class="card">
+        <div class="list-group list-group-flush">
+            {% for cliente in clientes %}
+                <a class="list-group-item list-group-item-action" href="{% url 'cliente_detail' cliente.pk %}">{{ cliente.nome }}</a>
+            {% empty %}
+                <div class="list-group-item text-muted">Nenhum cliente cadastrado.</div>
+            {% endfor %}
+        </div>
+    </div>
 {% endblock %}

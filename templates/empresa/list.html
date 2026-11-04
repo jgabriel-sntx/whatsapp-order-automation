@@ -3,19 +3,18 @@
 {% block title %}Empresas{% endblock %}
 
 {% block content %}
-    <h2>Empresas</h2>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="fw-bold mb-0">Empresas</h3>
+        <a class="btn btn-success" href="{% url 'empresa_create' %}"><i class="fas fa-plus me-1"></i> Nova empresa</a>
+    </div>
 
-    <p>
-        <a href="{% url 'empresa_create' %}">Nova empresa</a>
-    </p>
-
-    <ul>
-        {% for empresa in empresas %}
-            <li>
-                <a href="{% url 'empresa_detail' empresa.pk %}">{{ empresa.nome }}</a>
-            </li>
-        {% empty %}
-            <li>Nenhuma empresa cadastrada.</li>
-        {% endfor %}
-    </ul>
+    <div class="card">
+        <div class="list-group list-group-flush">
+            {% for empresa in empresas %}
+                <a class="list-group-item list-group-item-action" href="{% url 'empresa_detail' empresa.pk %}">{{ empresa.nome }}</a>
+            {% empty %}
+                <div class="list-group-item text-muted">Nenhuma empresa cadastrada.</div>
+            {% endfor %}
+        </div>
+    </div>
 {% endblock %}

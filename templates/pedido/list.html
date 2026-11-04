@@ -3,19 +3,18 @@
 {% block title %}Pedidos{% endblock %}
 
 {% block content %}
-    <h2>Pedidos</h2>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="fw-bold mb-0">Pedidos</h3>
+        <a class="btn btn-success" href="{% url 'pedido_create' %}"><i class="fas fa-plus me-1"></i> Novo pedido</a>
+    </div>
 
-    <p>
-        <a href="{% url 'pedido_create' %}">Novo pedido</a>
-    </p>
-
-    <ul>
-        {% for pedido in pedidos %}
-            <li>
-                <a href="{% url 'pedido_detail' pedido.pk %}">Pedido #{{ pedido.pk }} - {{ pedido.cliente.nome }}</a>
-            </li>
-        {% empty %}
-            <li>Nenhum pedido cadastrado.</li>
-        {% endfor %}
-    </ul>
+    <div class="card">
+        <div class="list-group list-group-flush">
+            {% for pedido in pedidos %}
+                <a class="list-group-item list-group-item-action" href="{% url 'pedido_detail' pedido.pk %}">Pedido #{{ pedido.pk }} - {{ pedido.cliente.nome }}</a>
+            {% empty %}
+                <div class="list-group-item text-muted">Nenhum pedido cadastrado.</div>
+            {% endfor %}
+        </div>
+    </div>
 {% endblock %}

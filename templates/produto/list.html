@@ -3,19 +3,18 @@
 {% block title %}Produtos{% endblock %}
 
 {% block content %}
-    <h2>Produtos</h2>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="fw-bold mb-0">Produtos</h3>
+        <a class="btn btn-success" href="{% url 'produto_create' %}"><i class="fas fa-plus me-1"></i> Novo produto</a>
+    </div>
 
-    <p>
-        <a href="{% url 'produto_create' %}">Novo produto</a>
-    </p>
-
-    <ul>
-        {% for produto in produtos %}
-            <li>
-                <a href="{% url 'produto_detail' produto.pk %}">{{ produto.nome }}</a>
-            </li>
-        {% empty %}
-            <li>Nenhum produto cadastrado.</li>
-        {% endfor %}
-    </ul>
+    <div class="card">
+        <div class="list-group list-group-flush">
+            {% for produto in produtos %}
+                <a class="list-group-item list-group-item-action" href="{% url 'produto_detail' produto.pk %}">{{ produto.nome }}</a>
+            {% empty %}
+                <div class="list-group-item text-muted">Nenhum produto cadastrado.</div>
+            {% endfor %}
+        </div>
+    </div>
 {% endblock %}

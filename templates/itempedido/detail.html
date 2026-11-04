@@ -3,17 +3,28 @@
 {% block title %}Detalhes do item de pedido{% endblock %}
 
 {% block content %}
-    <h2>Detalhes do item de pedido</h2>
-
-    <p><strong>ID:</strong> {{ item.pk }}</p>
-    <p><strong>Pedido:</strong> <a href="{% url 'pedido_detail' item.pedido.pk %}">Pedido #{{ item.pedido.pk }}</a></p>
-    <p><strong>Produto:</strong> {{ item.produto.nome }}</p>
-    <p><strong>Quantidade:</strong> {{ item.quantidade }}</p>
-    <p><strong>Subtotal:</strong> {{ item.calcular_subtotal }}</p>
-
-    <p class="acoes">
-        <a href="{% url 'itempedido_update' item.pk %}">Editar</a>
-        <a href="{% url 'itempedido_delete' item.pk %}">Excluir</a>
-        <a href="{% url 'itempedido_list' %}">Voltar</a>
-    </p>
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Detalhes do item de pedido</div>
+        </div>
+        <div class="card-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-3">ID</dt>
+                <dd class="col-sm-9">{{ item.pk }}</dd>
+                <dt class="col-sm-3">Pedido</dt>
+                <dd class="col-sm-9"><a href="{% url 'pedido_detail' item.pedido.pk %}">Pedido #{{ item.pedido.pk }}</a></dd>
+                <dt class="col-sm-3">Produto</dt>
+                <dd class="col-sm-9">{{ item.produto.nome }}</dd>
+                <dt class="col-sm-3">Quantidade</dt>
+                <dd class="col-sm-9">{{ item.quantidade }}</dd>
+                <dt class="col-sm-3">Subtotal</dt>
+                <dd class="col-sm-9">{{ item.calcular_subtotal }}</dd>
+            </dl>
+        </div>
+        <div class="card-footer">
+            <a class="btn btn-primary" href="{% url 'itempedido_update' item.pk %}"><i class="fas fa-edit me-1"></i> Editar</a>
+            <a class="btn btn-danger" href="{% url 'itempedido_delete' item.pk %}"><i class="fas fa-trash me-1"></i> Excluir</a>
+            <a class="btn btn-secondary" href="{% url 'itempedido_list' %}"><i class="fas fa-arrow-left me-1"></i> Voltar</a>
+        </div>
+    </div>
 {% endblock %}

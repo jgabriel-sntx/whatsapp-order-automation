@@ -3,28 +3,41 @@
 {% block title %}Detalhes da categoria{% endblock %}
 
 {% block content %}
-    <h2>Detalhes da categoria</h2>
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Detalhes da categoria</div>
+        </div>
+        <div class="card-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-3">ID</dt>
+                <dd class="col-sm-9">{{ categoria.pk }}</dd>
+                <dt class="col-sm-3">Empresa</dt>
+                <dd class="col-sm-9">{{ categoria.empresa }}</dd>
+                <dt class="col-sm-3">Nome</dt>
+                <dd class="col-sm-9">{{ categoria.nome }}</dd>
+                <dt class="col-sm-3">Descrição</dt>
+                <dd class="col-sm-9">{{ categoria.descricao|default:"-" }}</dd>
+                <dt class="col-sm-3">Ativo</dt>
+                <dd class="col-sm-9">{{ categoria.ativo }}</dd>
+            </dl>
+        </div>
+        <div class="card-footer">
+            <a class="btn btn-primary" href="{% url 'categoria_update' categoria.pk %}"><i class="fas fa-edit me-1"></i> Editar</a>
+            <a class="btn btn-danger" href="{% url 'categoria_delete' categoria.pk %}"><i class="fas fa-trash me-1"></i> Excluir</a>
+            <a class="btn btn-secondary" href="{% url 'categoria_list' %}"><i class="fas fa-arrow-left me-1"></i> Voltar</a>
+        </div>
+    </div>
 
-    <p><strong>ID:</strong> {{ categoria.pk }}</p>
-    <p><strong>Empresa:</strong> {{ categoria.empresa }}</p>
-    <p><strong>Nome:</strong> {{ categoria.nome }}</p>
-    <p><strong>Descrição:</strong> {{ categoria.descricao|default:"-" }}</p>
-    <p><strong>Ativo:</strong> {{ categoria.ativo }}</p>
-
-    <p class="acoes">
-        <a href="{% url 'categoria_update' categoria.pk %}">Editar</a>
-        <a href="{% url 'categoria_delete' categoria.pk %}">Excluir</a>
-        <a href="{% url 'categoria_list' %}">Voltar</a>
-    </p>
-
-    <h3>Produtos</h3>
-    <ul>
-        {% for produto in categoria.produtos.all %}
-            <li>
-                <a href="{% url 'produto_detail' produto.pk %}">{{ produto.nome }}</a>
-            </li>
-        {% empty %}
-            <li>Nenhum produto cadastrado.</li>
-        {% endfor %}
-    </ul>
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Produtos</div>
+        </div>
+        <div class="list-group list-group-flush">
+            {% for produto in categoria.produtos.all %}
+                <a class="list-group-item list-group-item-action" href="{% url 'produto_detail' produto.pk %}">{{ produto.nome }}</a>
+            {% empty %}
+                <div class="list-group-item text-muted">Nenhum produto cadastrado.</div>
+            {% endfor %}
+        </div>
+    </div>
 {% endblock %}

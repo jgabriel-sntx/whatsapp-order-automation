@@ -3,19 +3,18 @@
 {% block title %}Itens de pedido{% endblock %}
 
 {% block content %}
-    <h2>Itens de pedido</h2>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="fw-bold mb-0">Itens de pedido</h3>
+        <a class="btn btn-success" href="{% url 'itempedido_create' %}"><i class="fas fa-plus me-1"></i> Novo item de pedido</a>
+    </div>
 
-    <p>
-        <a href="{% url 'itempedido_create' %}">Novo item de pedido</a>
-    </p>
-
-    <ul>
-        {% for item in itens %}
-            <li>
-                <a href="{% url 'itempedido_detail' item.pk %}">{{ item.produto.nome }} - {{ item.quantidade }}x (Pedido #{{ item.pedido.pk }})</a>
-            </li>
-        {% empty %}
-            <li>Nenhum item cadastrado.</li>
-        {% endfor %}
-    </ul>
+    <div class="card">
+        <div class="list-group list-group-flush">
+            {% for item in itens %}
+                <a class="list-group-item list-group-item-action" href="{% url 'itempedido_detail' item.pk %}">{{ item.produto.nome }} - {{ item.quantidade }}x (Pedido #{{ item.pedido.pk }})</a>
+            {% empty %}
+                <div class="list-group-item text-muted">Nenhum item cadastrado.</div>
+            {% endfor %}
+        </div>
+    </div>
 {% endblock %}

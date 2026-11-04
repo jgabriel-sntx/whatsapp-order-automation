@@ -3,28 +3,41 @@
 {% block title %}Detalhes do pedido{% endblock %}
 
 {% block content %}
-    <h2>Detalhes do pedido</h2>
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Detalhes do pedido</div>
+        </div>
+        <div class="card-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-3">ID</dt>
+                <dd class="col-sm-9">{{ pedido.pk }}</dd>
+                <dt class="col-sm-3">Cliente</dt>
+                <dd class="col-sm-9">{{ pedido.cliente.nome }}</dd>
+                <dt class="col-sm-3">Status</dt>
+                <dd class="col-sm-9">{{ pedido.get_status_display }}</dd>
+                <dt class="col-sm-3">Criado em</dt>
+                <dd class="col-sm-9">{{ pedido.criado_em }}</dd>
+                <dt class="col-sm-3">Total</dt>
+                <dd class="col-sm-9">{{ pedido.calcular_total }}</dd>
+            </dl>
+        </div>
+        <div class="card-footer">
+            <a class="btn btn-primary" href="{% url 'pedido_update' pedido.pk %}"><i class="fas fa-edit me-1"></i> Editar</a>
+            <a class="btn btn-danger" href="{% url 'pedido_delete' pedido.pk %}"><i class="fas fa-trash me-1"></i> Excluir</a>
+            <a class="btn btn-secondary" href="{% url 'pedido_list' %}"><i class="fas fa-arrow-left me-1"></i> Voltar</a>
+        </div>
+    </div>
 
-    <p><strong>ID:</strong> {{ pedido.pk }}</p>
-    <p><strong>Cliente:</strong> {{ pedido.cliente.nome }}</p>
-    <p><strong>Status:</strong> {{ pedido.get_status_display }}</p>
-    <p><strong>Criado em:</strong> {{ pedido.criado_em }}</p>
-    <p><strong>Total:</strong> {{ pedido.calcular_total }}</p>
-
-    <p class="acoes">
-        <a href="{% url 'pedido_update' pedido.pk %}">Editar</a>
-        <a href="{% url 'pedido_delete' pedido.pk %}">Excluir</a>
-        <a href="{% url 'pedido_list' %}">Voltar</a>
-    </p>
-
-    <h3>Itens</h3>
-    <ul>
-        {% for item in pedido.itens.all %}
-            <li>
-                <a href="{% url 'itempedido_detail' item.pk %}">{{ item.produto.nome }} - {{ item.quantidade }}x</a>
-            </li>
-        {% empty %}
-            <li>Nenhum item cadastrado.</li>
-        {% endfor %}
-    </ul>
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Itens</div>
+        </div>
+        <div class="list-group list-group-flush">
+            {% for item in pedido.itens.all %}
+                <a class="list-group-item list-group-item-action" href="{% url 'itempedido_detail' item.pk %}">{{ item.produto.nome }} - {{ item.quantidade }}x</a>
+            {% empty %}
+                <div class="list-group-item text-muted">Nenhum item cadastrado.</div>
+            {% endfor %}
+        </div>
+    </div>
 {% endblock %}

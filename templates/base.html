@@ -210,5 +210,13 @@
     <script src="{% static 'kaiadmin/js/core/bootstrap.min.js' %}"></script>
     <script src="{% static 'kaiadmin/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js' %}"></script>
     <script src="{% static 'kaiadmin/js/kaiadmin.min.js' %}"></script>
+    <script>
+        document.querySelectorAll(".page-inner form input, .page-inner form select, .page-inner form textarea").forEach(function (el) {
+            if (el.type === "hidden") return;
+            if (el.type === "checkbox" || el.type === "radio") el.classList.add("form-check-input");
+            else if (el.tagName === "SELECT") el.classList.add("form-select");
+            else el.classList.add("form-control");
+        });
+    </script>
 </body>
 </html>

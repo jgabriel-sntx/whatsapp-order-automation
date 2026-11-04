@@ -3,13 +3,19 @@
 {% block title %}Excluir pedido{% endblock %}
 
 {% block content %}
-    <h2>Excluir pedido</h2>
-
-    <p>Tem certeza que deseja excluir o pedido #{{ pedido.pk }}?</p>
-
-    <form method="post">
-        {% csrf_token %}
-        <button type="submit">Confirmar exclusão</button>
-        <a href="{% url 'pedido_detail' pedido.pk %}">Cancelar</a>
-    </form>
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Excluir pedido</div>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-danger mb-0">Tem certeza que deseja excluir o pedido #{{ pedido.pk }}?</div>
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            <div class="card-action">
+                <button type="submit" class="btn btn-danger"><i class="fas fa-trash me-1"></i> Confirmar exclusão</button>
+                <a class="btn btn-secondary" href="{% url 'pedido_detail' pedido.pk %}"><i class="fas fa-arrow-left me-1"></i> Cancelar</a>
+            </div>
+        </form>
+    </div>
 {% endblock %}
