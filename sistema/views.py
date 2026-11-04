@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth import logout
-from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.decorators import permission_required, login_required
 from django.contrib.auth.models import Permission
 from django.db import transaction
 from django.db.models import ProtectedError
@@ -20,43 +20,7 @@ from .models import Cadastro, Categoria, Cliente, Empresa, ItemPedido, Pedido, P
 
 MSG_FORM_INVALIDO = "Não foi possível salvar. Corrija os erros abaixo."
 
-# Permissões NATIVASS do Django << REAL
-PERMISSOES_EMPRESA = [
-    "view_empresa", "change_empresa", "delete_empresa",
-    "view_categoria", "add_categoria", "change_categoria", "delete_categoria",
-    "view_cliente", "add_cliente", "change_cliente", "delete_cliente",
-    "view_produto", "add_produto", "change_produto", "delete_produto",
-    "view_pedido", "add_pedido", "change_pedido", "delete_pedido",
-    "view_itempedido", "add_itempedido", "change_itempedido", "delete_itempedido",
-]
 
-
-# =============================================================================
-# PERMISSÕES E ESCOPO POR EMPRESA
-# =============================================================================
-
-# Querysets já filtrados pela empresa logada. Toda busca por pk passa por
-# eles, então um registro de outra empresa devolve 404.
-def categorias_da_empresa(empresa):
-    return Categoria.objects.filter(empresa=empresa)
-
-
-def clientes_da_empresa(empresa):
-    return Cliente.objects.filter(empresa=empresa)
-
-
-def produtos_da_empresa(empresa):
-    return Produto.objects.filter(categoria__empresa=empresa).select_related("categoria")
-
-
-def pedidos_da_empresa(empresa):
-    return Pedido.objects.filter(cliente__empresa=empresa).select_related("cliente")
-
-
-def itens_da_empresa(empresa):
-    return ItemPedido.objects.filter(pedido__cliente__empresa=empresa).select_related(
-        "pedido", "produto"
-    )
 
 
 # Página inicial com o menu de navegação (definido em base.html).
@@ -70,13 +34,14 @@ def index(request):
 # =============================================================================
 
 # Cada empresa só enxerga a si mesma.
-@permission_required("sistema.view_empresa")
+@login_required
+@permission_required("sistema.view_empresa", raise_exception=True)
 def empresa_list(request):
     empresas = Empresa.objects.filter(pk=request.user.empresa.pk)
     return render(request, "empresa/list.html", {"empresas": empresas})
 
-
-@permission_required("sistema.view_empresa")
+@login_required
+@permission_required("sistema.view_empresa", raise_exception=True)
 def empresa_detail(request, pk):
     empresa = get_object_or_404(Empresa.objects.filter(pk=request.user.empresa.pk), pk=pk)
     return render(request, "empresa/detail.html", {"empresa": empresa})
@@ -101,8 +66,8 @@ def empresa_create(request):
         form = EmpresaCreateForm()
     return render(request, "empresa/form.html", {"form": form})
 
-
-@permission_required("sistema.change_empresa")
+@login_required
+@permission_required("sistema.change_empresa", raise_exception=True)
 def empresa_update(request, pk):
     empresa = get_object_or_404(Empresa.objects.filter(pk=request.user.empresa.pk), pk=pk)
     if request.method == "POST":
@@ -118,7 +83,8 @@ def empresa_update(request, pk):
 
 
 # Excluir a empresa apaga a própria conta, então encerra a sessão em seguida.
-@permission_required("sistema.delete_empresa")
+@login_required
+@permission_required("sistema.delete_empresa", raise_exception=True)
 def empresa_delete(request, pk):
     empresa = get_object_or_404(Empresa.objects.filter(pk=request.user.empresa.pk), pk=pk)
     if request.method == "POST":
@@ -140,19 +106,21 @@ def empresa_delete(request, pk):
 # CATEGORIA
 # =============================================================================
 
-@permission_required("sistema.view_categoria")
+@login_required
+@permission_required("sistema.view_categoria", raise_exception=True)
 def categoria_list(request):
     categorias = categorias_da_empresa(request.user.empresa)
     return render(request, "categoria/list.html", {"categorias": categorias})
 
 
-@permission_required("sistema.view_categoria")
+@login_required
+@permission_required("sistema.view_categoria", raise_exception=True)
 def categoria_detail(request, pk):
     categoria = get_object_or_404(categorias_da_empresa(request.user.empresa), pk=pk)
     return render(request, "categoria/detail.html", {"categoria": categoria})
 
 
-@permission_required("sistema.add_categoria")
+@permission_required("sistema.add_categoria", raise_exception=True)
 def categoria_create(request):
     if request.method == "POST":
         form = CategoriaForm(request.POST)
@@ -167,8 +135,8 @@ def categoria_create(request):
         form = CategoriaForm()
     return render(request, "categoria/form.html", {"form": form})
 
-
-@permission_required("sistema.change_categoria")
+@login_required
+@permission_required("sistema.change_categoria", raise_exception=True)
 def categoria_update(request, pk):
     categoria = get_object_or_404(categorias_da_empresa(request.user.empresa), pk=pk)
     if request.method == "POST":
@@ -182,8 +150,8 @@ def categoria_update(request, pk):
         form = CategoriaForm(instance=categoria)
     return render(request, "categoria/form.html", {"form": form})
 
-
-@permission_required("sistema.delete_categoria")
+@login_required
+@permission_required("sistema.delete_categoria", raise_exception=True)
 def categoria_delete(request, pk):
     categoria = get_object_or_404(categorias_da_empresa(request.user.empresa), pk=pk)
     if request.method == "POST":
@@ -204,13 +172,15 @@ def categoria_delete(request, pk):
 # CLIENTE
 # =============================================================================
 
-@permission_required("sistema.view_cliente")
+@login_required
+@permission_required("sistema.view_cliente", raise_exception=True)
 def cliente_list(request):
     clientes = clientes_da_empresa(request.user.empresa)
     return render(request, "cliente/list.html", {"clientes": clientes})
 
 
-@permission_required("sistema.view_cliente")
+@login_required
+@permission_required("sistema.view_cliente", raise_exception=True)
 def cliente_detail(request, pk):
     cliente = get_object_or_404(clientes_da_empresa(request.user.empresa), pk=pk)
     return render(request, "cliente/detail.html", {"cliente": cliente})
@@ -218,7 +188,8 @@ def cliente_detail(request, pk):
 
 # Cria o cliente e o Cadastro (tabela de ligação) com a empresa logada,
 # na mesma transação: ou grava os dois ou nenhum.
-@permission_required("sistema.add_cliente")
+@permission_required("sistema.add_cliente", raise_exception=True)
+@login_required
 def cliente_create(request):
     if request.method == "POST":
         form = ClienteForm(request.POST)
@@ -234,7 +205,8 @@ def cliente_create(request):
     return render(request, "cliente/form.html", {"form": form})
 
 
-@permission_required("sistema.change_cliente")
+@login_required
+@permission_required("sistema.change_cliente", raise_exception=True)
 def cliente_update(request, pk):
     cliente = get_object_or_404(clientes_da_empresa(request.user.empresa), pk=pk)
     if request.method == "POST":
@@ -249,7 +221,8 @@ def cliente_update(request, pk):
     return render(request, "cliente/form.html", {"form": form})
 
 
-@permission_required("sistema.delete_cliente")
+@login_required
+@permission_required("sistema.delete_cliente", raise_exception=True)
 def cliente_delete(request, pk):
     cliente = get_object_or_404(clientes_da_empresa(request.user.empresa), pk=pk)
     if request.method == "POST":
@@ -270,20 +243,23 @@ def cliente_delete(request, pk):
 # PRODUTO
 # =============================================================================
 
-@permission_required("sistema.view_produto")
+@login_required
+@permission_required("sistema.view_produto", raise_exception=True)
 def produto_list(request):
     produtos = produtos_da_empresa(request.user.empresa)
     return render(request, "produto/list.html", {"produtos": produtos})
 
 
-@permission_required("sistema.view_produto")
+@login_required
+@permission_required("sistema.view_produto", raise_exception=True)
 def produto_detail(request, pk):
     produto = get_object_or_404(produtos_da_empresa(request.user.empresa), pk=pk)
     return render(request, "produto/detail.html", {"produto": produto})
 
 
 # Usa request.FILES porque o form tem upload de imagem.
-@permission_required("sistema.add_produto")
+@login_required
+@permission_required("sistema.add_produto", raise_exception=True)
 def produto_create(request):
     if request.method == "POST":
         form = ProdutoForm(request.POST, request.FILES, empresa=request.user.empresa)
@@ -297,7 +273,8 @@ def produto_create(request):
     return render(request, "produto/form.html", {"form": form})
 
 
-@permission_required("sistema.change_produto")
+@login_required
+@permission_required("sistema.change_produto", raise_exception=True)
 def produto_update(request, pk):
     produto = get_object_or_404(produtos_da_empresa(request.user.empresa), pk=pk)
     if request.method == "POST":
@@ -312,7 +289,8 @@ def produto_update(request, pk):
     return render(request, "produto/form.html", {"form": form})
 
 
-@permission_required("sistema.delete_produto")
+@login_required
+@permission_required("sistema.delete_produto", raise_exception=True)
 def produto_delete(request, pk):
     produto = get_object_or_404(produtos_da_empresa(request.user.empresa), pk=pk)
     if request.method == "POST":
@@ -333,20 +311,23 @@ def produto_delete(request, pk):
 # PEDIDO
 # =============================================================================
 
-@permission_required("sistema.view_pedido")
+@login_required
+@permission_required("sistema.view_pedido", raise_exception=True)
 def pedido_list(request):
     pedidos = pedidos_da_empresa(request.user.empresa)
     return render(request, "pedido/list.html", {"pedidos": pedidos})
 
 
-@permission_required("sistema.view_pedido")
+@login_required
+@permission_required("sistema.view_pedido", raise_exception=True)
 def pedido_detail(request, pk):
     pedidos = pedidos_da_empresa(request.user.empresa).prefetch_related("itens__produto")
     pedido = get_object_or_404(pedidos, pk=pk)
     return render(request, "pedido/detail.html", {"pedido": pedido})
 
 
-@permission_required("sistema.add_pedido")
+@login_required
+@permission_required("sistema.add_pedido", raise_exception=True)
 def pedido_create(request):
     if request.method == "POST":
         form = PedidoForm(request.POST, empresa=request.user.empresa)
@@ -360,7 +341,8 @@ def pedido_create(request):
     return render(request, "pedido/form.html", {"form": form})
 
 
-@permission_required("sistema.change_pedido")
+@login_required
+@permission_required("sistema.change_pedido", raise_exception=True)
 def pedido_update(request, pk):
     pedido = get_object_or_404(pedidos_da_empresa(request.user.empresa), pk=pk)
     if request.method == "POST":
@@ -375,7 +357,8 @@ def pedido_update(request, pk):
     return render(request, "pedido/form.html", {"form": form})
 
 
-@permission_required("sistema.delete_pedido")
+@login_required
+@permission_required("sistema.delete_pedido", raise_exception=True)
 def pedido_delete(request, pk):
     pedido = get_object_or_404(pedidos_da_empresa(request.user.empresa), pk=pk)
     if request.method == "POST":
@@ -402,20 +385,23 @@ def _pedido_do_item_fechado(request, item, acao):
     return False
 
 
-@permission_required("sistema.view_itempedido")
+@login_required
+@permission_required("sistema.view_itempedido", raise_exception=True)
 def itempedido_list(request):
     itens = itens_da_empresa(request.user.empresa)
     return render(request, "itempedido/list.html", {"itens": itens})
 
 
-@permission_required("sistema.view_itempedido")
+@login_required
+@permission_required("sistema.view_itempedido", raise_exception=True)
 def itempedido_detail(request, pk):
     item = get_object_or_404(itens_da_empresa(request.user.empresa), pk=pk)
     return render(request, "itempedido/detail.html", {"item": item})
 
 
 # O ItemPedidoForm já recusa pedido cancelado/finalizado (clean_pedido).
-@permission_required("sistema.add_itempedido")
+@login_required
+@permission_required("sistema.add_itempedido", raise_exception=True)
 def itempedido_create(request):
     if request.method == "POST":
         form = ItemPedidoForm(request.POST, empresa=request.user.empresa)
@@ -429,7 +415,8 @@ def itempedido_create(request):
     return render(request, "itempedido/form.html", {"form": form})
 
 
-@permission_required("sistema.change_itempedido")
+@login_required
+@permission_required("sistema.change_itempedido", raise_exception=True)
 def itempedido_update(request, pk):
     item = get_object_or_404(itens_da_empresa(request.user.empresa), pk=pk)
     if _pedido_do_item_fechado(request, item, "alterar"):
@@ -446,7 +433,8 @@ def itempedido_update(request, pk):
     return render(request, "itempedido/form.html", {"form": form})
 
 
-@permission_required("sistema.delete_itempedido")
+@login_required
+@permission_required("sistema.delete_itempedido", raise_exception=True)
 def itempedido_delete(request, pk):
     item = get_object_or_404(itens_da_empresa(request.user.empresa), pk=pk)
     if _pedido_do_item_fechado(request, item, "excluir"):
