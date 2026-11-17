@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
+from django.db.models import Q
 
 from .models import Categoria, Empresa, Cliente, Produto, Pedido, ItemPedido
 
@@ -49,6 +50,7 @@ class ProdutoForm(forms.ModelForm):
 
 
 # Pedido: a seleção de cliente mostra só os clientes da empresa logada.
+# Pedido cancelado ou finalizado não pode mudar de status (não "reabre").
 class PedidoForm(forms.ModelForm):
     class Meta:
         model = Pedido
@@ -57,6 +59,14 @@ class PedidoForm(forms.ModelForm):
     def __init__(self, *args, empresa, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["cliente"].queryset = Cliente.objects.filter(empresa=empresa)
+
+    def clean_status(self):
+        novo = self.cleaned_data["status"]
+        if self.instance.pk and self.instance.status in PEDIDO_STATUS_FECHADOS and novo != self.instance.status:
+            raise forms.ValidationError(
+                f"Um pedido {self.instance.get_status_display().lower()} não pode mudar de status."
+            )
+        return novo
 
 
 # ItemPedido: pedidos e produtos limitados à empresa logada, e não aceita
@@ -71,7 +81,13 @@ class ItemPedidoForm(forms.ModelForm):
         self.fields["pedido"].queryset = Pedido.objects.filter(
             cliente__empresa=empresa
         ).select_related("cliente")
-        self.fields["produto"].queryset = Produto.objects.filter(categoria__empresa=empresa)
+        # Só produtos ativos; na edição, o produto atual do item continua na lista.
+        filtro = Q(ativo=True)
+        if self.instance.pk:
+            filtro |= Q(pk=self.instance.produto_id)
+        self.fields["produto"].queryset = Produto.objects.filter(
+            categoria__empresa=empresa
+        ).filter(filtro)
 
     def clean_pedido(self):
         pedido = self.cleaned_data["pedido"]
