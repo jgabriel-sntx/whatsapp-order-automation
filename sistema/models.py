@@ -11,13 +11,21 @@ class Empresa(User):
     telefone = models.CharField(max_length=15)
     endereco = models.CharField(max_length=255)
     instrucoes_atendimento = models.TextField(blank=True)
+    # Chave que o bot de WhatsApp usa para chamar a API desta empresa.
+    token_bot = models.CharField(
+        max_length=64,
+        unique=True,
+        null=True,
+        blank=True,
+        editable=False
+    )
 
     class Meta:
         verbose_name = "Empresa"
         verbose_name_plural = "Empresas"
 
-        def __str__(self):
-            return self.nome
+    def __str__(self):
+        return self.nome
 
 
 class Cliente(models.Model):
