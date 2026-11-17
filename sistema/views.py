@@ -1,10 +1,13 @@
 from django.contrib import messages
-from django.contrib.auth import logout
+from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import permission_required, login_required
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import Permission
 from django.db import transaction
 from django.db.models import ProtectedError
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.http import url_has_allowed_host_and_scheme
+from django.views.decorators.http import require_POST
 
 from .forms import (
     PEDIDO_STATUS_FECHADOS,
@@ -20,14 +23,75 @@ from .models import Cadastro, Categoria, Cliente, Empresa, ItemPedido, Pedido, P
 
 MSG_FORM_INVALIDO = "Não foi possível salvar. Corrija os erros abaixo."
 
+# Permissões nativas do Django (app.acao_model) dadas a toda empresa nova, no
+# cadastro. Cada view confere uma delas com @permission_required.
+_MODELOS_COM_CRUD = ("categoria", "cliente", "produto", "pedido", "itempedido")
+PERMISSOES_EMPRESA = ["view_empresa", "change_empresa", "delete_empresa"] + [
+    f"{acao}_{modelo}"
+    for modelo in _MODELOS_COM_CRUD
+    for acao in ("add", "change", "delete", "view")
+]
 
+
+# Querysets já filtrados pela empresa logada. Toda busca por pk passa por
+# eles, então um registro de outra empresa devolve 404.
+def categorias_da_empresa(empresa):
+    return Categoria.objects.filter(empresa=empresa)
+
+
+def clientes_da_empresa(empresa):
+    return Cliente.objects.filter(empresa=empresa)
+
+
+def produtos_da_empresa(empresa):
+    return Produto.objects.filter(categoria__empresa=empresa).select_related("categoria")
+
+
+def pedidos_da_empresa(empresa):
+    return Pedido.objects.filter(cliente__empresa=empresa).select_related("cliente")
+
+
+def itens_da_empresa(empresa):
+    return ItemPedido.objects.filter(pedido__cliente__empresa=empresa).select_related(
+        "pedido", "produto"
+    )
+
+
+# =============================================================================
+# LOGIN E LOGOUT (FBV)
+# =============================================================================
+
+# Login em FBV usando o formulário pronto do Django (AuthenticationForm).
+# O parâmetro "next" só é seguido se apontar para este mesmo site.
+def login_view(request):
+    if request.user.is_authenticated:
+        return redirect("index")
+    proximo = request.POST.get("next") or request.GET.get("next", "")
+    if request.method == "POST":
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            login(request, form.get_user())
+            messages.success(request, "Login realizado com sucesso.")
+            if url_has_allowed_host_and_scheme(
+                proximo, allowed_hosts={request.get_host()}, require_https=request.is_secure()
+            ):
+                return redirect(proximo)
+            return redirect("index")
+        messages.error(request, "Usuário ou senha inválidos.")
+    else:
+        form = AuthenticationForm(request)
+    return render(request, "registration/login.html", {"form": form, "next": proximo})
+
+
+# Só aceita POST (o botão "Sair" do menu é um formulário com CSRF).
+@require_POST
+def logout_view(request):
+    logout(request)
+    messages.info(request, "Você saiu do sistema.")
+    return redirect("login")
 
 
 # Página inicial com o menu de navegação (definido em base.html).
-@permission_required("sistema.view_empresa")
-def index(request):
-    return render(request, "index.html")
-
 
 # =============================================================================
 # EMPRESA
@@ -120,6 +184,7 @@ def categoria_detail(request, pk):
     return render(request, "categoria/detail.html", {"categoria": categoria})
 
 
+@login_required
 @permission_required("sistema.add_categoria", raise_exception=True)
 def categoria_create(request):
     if request.method == "POST":
@@ -188,8 +253,8 @@ def cliente_detail(request, pk):
 
 # Cria o cliente e o Cadastro (tabela de ligação) com a empresa logada,
 # na mesma transação: ou grava os dois ou nenhum.
-@permission_required("sistema.add_cliente", raise_exception=True)
 @login_required
+@permission_required("sistema.add_cliente", raise_exception=True)
 def cliente_create(request):
     if request.method == "POST":
         form = ClienteForm(request.POST)

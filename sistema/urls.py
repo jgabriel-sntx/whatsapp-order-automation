@@ -5,6 +5,10 @@ from . import views
 urlpatterns = [
     path("", views.index, name="index"),
 
+    # Autenticação (FBV com django.contrib.auth).
+    path("entrar/", views.login_view, name="login"),
+    path("sair/", views.logout_view, name="logout"),
+
     # Empresa: CRUD completo.
     path("empresas/", views.empresa_list, name="empresa_list"),
     path("empresas/nova/", views.empresa_create, name="empresa_create"),
